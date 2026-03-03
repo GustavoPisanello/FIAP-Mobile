@@ -1,0 +1,26 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+/my-app/node_modules/
+# Expo
+/my-app/.expo/
+/my-app/dist/
+/my-app/web-build/
+/my-app/expo-env.d.ts
+
+# Native
+/my-app/.kotlin/
+/my-app/*.orig.*
+/my-app/*.jks
+/my-app/*.p8
+/my-app/*.p12
+/my-app/*.key
+/my-app/*.mobileprovision
+
+/my-app/# Metro
+/my-app/.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
