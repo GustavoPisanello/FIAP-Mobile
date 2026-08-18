@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { User } from "../types/User";
 import { createUser, deleteUser, subscribeToUsers, updateUser } from "../services/useService";
+import React from "react";
 
 export function HomeScreen() {
 	const [name, setName] = useState("");
