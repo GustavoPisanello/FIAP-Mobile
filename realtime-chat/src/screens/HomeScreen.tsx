@@ -1,11 +1,11 @@
-import { View } from "react-native/types_generated/index";
-import { SafeAreaView } from "react-native/types_generated/index";
+import { SafeAreaView, View } from "react-native";
 
-export function HomeScreen(){
+
+export function HomeScreen() {
     return (
         <SafeAreaView>
             <View>
-                a
+                REACT
             </View>
         </SafeAreaView>
     )

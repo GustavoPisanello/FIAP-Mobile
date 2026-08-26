@@ -1,13 +1,30 @@
 import { ActivityIndicator, Alert, Button, SafeAreaView, StyleSheet, Text, TextInput, View, } from "react-native";
 import { FirebaseError } from "firebase/app";
 import { login, register } from "../services/authService";
-import React from "react";
+import { useState } from "react";
+import { GoogleSignin, SignInResponse } from "@react-native-google-signin/google-signin";
+import firebase from "firebase/compat/app";
 
 export function AuthScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    async function onGoogleAuthenticate() {
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+        const response: SignInResponse = await GoogleSignin.signIn();
+
+        const token = response?.data?.idToken;
+
+        if (!token) return "Não foi possível realizar LogIn via Google";
+
+        const googleCredential = firebase.auth.GoogleAuthProvider.credential(token);
+
+        return firebase.auth().signInWithCredential(googleCredential);
+
+    }
 
     function validateFields() {
         setErrorMessage("");
@@ -136,6 +153,7 @@ export function AuthScreen() {
                     <View style={styles.buttons}>
                         <Button title="Entrar" onPress={handleLogin} />
                         <Button title="Criar conta" onPress={handleRegister} />
+                        <Button title="Entrar com Google" onPress={() => onGoogleAuthenticate()} />
                     </View>
                 )}
             </View>
