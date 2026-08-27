@@ -1,0 +1,66 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['name', 'provider'])",
+
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "provider": {
+          ".validate": "newData.val() === 'password' || newData.val() === 'google' || newData.val() === 'apple'"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    "conversations": {
+      "$conversationId": {
+        ".read": "auth != null && ($conversationId.beginsWith(auth.uid + '_') || $conversationId.endsWith('_' + auth.uid))",
+        ".write": "auth != null && ($conversationId.beginsWith(auth.uid + '_') || $conversationId.endsWith('_' + auth.uid)) && !data.exists() && newData.exists()",
+        ".validate": "newData.hasChildren(['participants', 'createdAt']) && newData.child('participants/0').val() + '_' + newData.child('participants/1').val() === $conversationId",
+
+        "participants": {
+          "0": { ".validate": "newData.isString()" },
+          "1": { ".validate": "newData.isString()" },
+          "$other": { ".validate": false }
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    "messages": {
+      "$conversationId": {
+        ".read": "auth != null && ($conversationId.beginsWith(auth.uid + '_') || $conversationId.endsWith('_' + auth.uid))",
+        ".indexOn": "createdAt",
+
+        "$messageId": {
+          ".write": "auth != null && ($conversationId.beginsWith(auth.uid + '_') || $conversationId.endsWith('_' + auth.uid)) && !data.exists() && newData.exists()",
+          ".validate": "newData.hasChildren(['senderId', 'receiverId', 'text', 'createdAt']) && newData.child('senderId').val() === auth.uid && ($conversationId === auth.uid + '_' + newData.child('receiverId').val() || $conversationId === newData.child('receiverId').val() + '_' + auth.uid) && (root.child('users').child(auth.uid).child('provider').val() === 'password') !== (root.child('users').child(newData.child('receiverId').val()).child('provider').val() === 'password')",
+
+          "senderId": { ".validate": "newData.isString()" },
+          "receiverId": { ".validate": "newData.isString()" },
+          "text": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 500" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}

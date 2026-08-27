@@ -1,0 +1,17 @@
+export const colors = {
+    background: '#f4f6fb',
+    surface: '#ffffff',
+    border: '#dfe3ec',
+    primary: '#2f5bea',
+    primaryDark: '#1f3fa8',
+    text: '#16192b',
+    textMuted: '#6b7288',
+    danger: '#d32f2f',
+    dangerSurface: '#ffebee',
+    ownBubble: '#2f5bea',
+    ownBubbleText: '#ffffff',
+    otherBubble: '#ffffff',
+    otherBubbleText: '#16192b',
+    apple: '#111111',
+    google: '#ea4335',
+} as const;

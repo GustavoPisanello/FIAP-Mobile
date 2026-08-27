@@ -1,6 +1,6 @@
 import { ActivityIndicator, Alert, Button, SafeAreaView, StyleSheet, Text, TextInput, View, } from "react-native";
 import { FirebaseError } from "firebase/app";
-import { login, register } from "../services/authService";
+import { loginWithEmail, registerWithEmail } from "../services/authService";
 import { useState } from "react";
 import { GoogleSignin, SignInResponse } from "@react-native-google-signin/google-signin";
 import firebase from "firebase/compat/app";
@@ -90,7 +90,7 @@ export function AuthScreen() {
             setLoading(true);
             setErrorMessage("");
 
-            const user = await register(email.trim(), password);
+            const user = await registerWithEmail(email.trim(), password, );
 
             Alert.alert("Conta criada", `Usuário cadastrado com sucesso:\n${user.email}`);
 
@@ -114,7 +114,7 @@ export function AuthScreen() {
             setLoading(true);
             setErrorMessage("");
 
-            await login(email.trim(), password);
+            await loginWithEmail(email.trim(), password);
 
             setPassword("");
 

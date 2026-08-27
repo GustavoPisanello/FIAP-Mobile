@@ -6,10 +6,14 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "realtimechat",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "bundleIdentifier": "com.fiap.realtimechat"
     },
     "android": {
+      "package": "com.fiap.realtimechat",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -18,7 +22,19 @@
       }
     },
     "web": {
+      "bundler": "metro",
+      "output": "single",
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-web-browser",
+      "expo-apple-authentication"
+    ],
+    "extra": {
+      "googleClientIdWeb": "770526641984-0tvrrsej2rr8nepigbpn8rdiddp340nl.apps.googleusercontent.com",
+      "googleClientIdIos": "",
+      "googleClientIdAndroid": ""
     }
   }
 }
