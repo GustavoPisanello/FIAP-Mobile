@@ -6,87 +6,86 @@ import { buildConversationId } from '../utils/chatRules';
 import { getErrorMessage } from '../utils/errors';
 
 export type UseChatResult = {
-    conversationId: string | null;
-    messages: ChatMessage[];
-    isLoading: boolean;
-    isSending: boolean;
-    errorMessage: string;
-    send: (text: string) => Promise<void>;
+  conversationId: string | null;
+  messages: ChatMessage[];
+  isLoading: boolean;
+  isSending: boolean;
+  errorMessage: string;
+  send: (text: string) => Promise<void>;
 };
 
-/** Snapshot do listener; guarda o id da conversa para nunca exibir mensagens de outro contato. */
 type ChatSnapshot = {
-    conversationId: string;
-    messages: ChatMessage[];
-    errorMessage: string;
+  conversationId: string;
+  messages: ChatMessage[];
+  errorMessage: string;
 };
 
 const NO_MESSAGES: ChatMessage[] = [];
 
 export function useChat(currentUser: ChatUser | null, contact: ChatUser | null): UseChatResult {
-    const [snapshot, setSnapshot] = useState<ChatSnapshot | null>(null);
-    const [isSending, setIsSending] = useState<boolean>(false);
-    const [sendError, setSendError] = useState<string>('');
+  const [snapshot, setSnapshot] = useState<ChatSnapshot | null>(null);
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const [sendError, setSendError] = useState<string>('');
 
-    const conversationId = useMemo(
-        () => (currentUser && contact ? buildConversationId(currentUser.uid, contact.uid) : null),
-        [currentUser, contact],
+  const conversationId = useMemo(
+    () => (currentUser && contact ? buildConversationId(currentUser.uid, contact.uid) : null),
+    [currentUser, contact],
+  );
+
+  useEffect(() => {
+    if (!conversationId) {
+      return;
+    }
+
+    const unsubscribe = observeMessages(
+      conversationId,
+      (messages) => setSnapshot({ conversationId, messages, errorMessage: '' }),
+      (error) =>
+        setSnapshot({
+          conversationId,
+          messages: NO_MESSAGES,
+          errorMessage: getErrorMessage(error, 'Não foi possível carregar as mensagens.'),
+        }),
     );
 
-    useEffect(() => {
-        if (!conversationId) {
-            return;
-        }
+    return unsubscribe;
+  }, [conversationId]);
 
-        const unsubscribe = observeMessages(
-            conversationId,
-            (messages) => setSnapshot({ conversationId, messages, errorMessage: '' }),
-            (error) =>
-                setSnapshot({
-                    conversationId,
-                    messages: NO_MESSAGES,
-                    errorMessage: getErrorMessage(error, 'Não foi possível carregar as mensagens.'),
-                }),
-        );
+  const isSynced = snapshot !== null && snapshot.conversationId === conversationId;
 
-        return unsubscribe;
-    }, [conversationId]);
+  const send = useCallback(
+    async (text: string) => {
+      if (!currentUser || !contact || !conversationId) {
+        return;
+      }
 
-    const isSynced = snapshot !== null && snapshot.conversationId === conversationId;
+      try {
+        setIsSending(true);
+        setSendError('');
 
-    const send = useCallback(
-        async (text: string) => {
-            if (!currentUser || !contact || !conversationId) {
-                return;
-            }
+        await ensureConversation(currentUser.uid, contact.uid);
 
-            try {
-                setIsSending(true);
-                setSendError('');
+        await sendMessage({
+          conversationId,
+          senderId: currentUser.uid,
+          receiverId: contact.uid,
+          text,
+        });
+      } catch (error) {
+        setSendError(getErrorMessage(error, 'Não foi possível enviar a mensagem.'));
+      } finally {
+        setIsSending(false);
+      }
+    },
+    [currentUser, contact, conversationId],
+  );
 
-                await ensureConversation(currentUser.uid, contact.uid);
-
-                await sendMessage({
-                    conversationId,
-                    senderId: currentUser.uid,
-                    receiverId: contact.uid,
-                    text,
-                });
-            } catch (error) {
-                setSendError(getErrorMessage(error, 'Não foi possível enviar a mensagem.'));
-            } finally {
-                setIsSending(false);
-            }
-        },
-        [currentUser, contact, conversationId],
-    );
-
-    return {
-        conversationId,
-        messages: isSynced ? snapshot.messages : NO_MESSAGES,
-        isLoading: conversationId !== null && !isSynced,
-        isSending,
-        errorMessage: sendError || (isSynced ? snapshot.errorMessage : ''),
-        send,
-    };
+  return {
+    conversationId,
+    messages: isSynced ? snapshot.messages : NO_MESSAGES,
+    isLoading: conversationId !== null && !isSynced,
+    isSending,
+    errorMessage: sendError || (isSynced ? snapshot.errorMessage : ''),
+    send,
+  };
 }
