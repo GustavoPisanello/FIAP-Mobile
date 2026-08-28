@@ -83,7 +83,6 @@ export function mapFirebaseUser(user: FirebaseUser, fallbackName?: string): Chat
     };
 }
 
-/** Garante que o usuário autenticado exista no Realtime Database para aparecer na lista de contatos. */
 async function syncProfile(user: FirebaseUser, fallbackName?: string): Promise<ChatUser> {
     const chatUser = mapFirebaseUser(user, fallbackName);
 
@@ -199,7 +198,6 @@ export async function loginWithApple(): Promise<ChatUser> {
 
     const credential = await signInWithCredential(auth, firebaseCredential);
 
-    // A Apple envia o nome apenas no primeiro login da conta.
     const appleName = [appleCredential.fullName?.givenName, appleCredential.fullName?.familyName]
         .filter((part): part is string => typeof part === 'string' && part.length > 0)
         .join(' ');
