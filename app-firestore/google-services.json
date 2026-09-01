@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "971956170202",
+    "project_id": "espx-mobile-c3feb",
+    "storage_bucket": "espx-mobile-c3feb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971956170202:android:5e6cea72b04e9226a764e3",
+        "android_client_info": {
+          "package_name": "br.app.fiap.espx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnYnjDDq5rKJNd9FhJIVDEVcxklB9BLFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
